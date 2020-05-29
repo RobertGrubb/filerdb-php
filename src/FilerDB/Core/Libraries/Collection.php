@@ -2,9 +2,12 @@
 
 namespace FilerDB\Core\Libraries;
 
+// Utilities
 use FilerDB\Core\Utilities\Error;
 use FilerDB\Core\Utilities\FileSystem;
+use FilerDB\Core\Utilities\Timestamp;
 
+// Libraries
 use FilerDB\Core\Libraries\Document;
 
 class Collection {
@@ -14,6 +17,11 @@ class Collection {
    * @var object
    */
   private $config;
+
+  /**
+   * Timestamp instance holder
+   */
+  private $timestamp;
 
   /**
    * Current database
@@ -43,12 +51,16 @@ class Collection {
     // Set the configuration
     $this->config = $config;
 
+    // Instantiate new timestamp instance
+    $this->timestamp = new Timestamp($this->config);
+
     // Set the current database
     $this->database = $database;
 
     // Retrieve the current database.
     $this->collection = $collection;
 
+    // Holder for documents that should be returned
     $this->documents = $this->getDocuments();
   }
 
@@ -58,17 +70,36 @@ class Collection {
    * ==============================
    */
 
+  /**
+   * Grabs a document with a specific id
+   */
   public function id ($id) {
     $documents = $this->documents;
     $data = $this->documentById($id, $documents);
     if ($data === false) return false;
-    return $documents[$data->index];
+    $this->documents = $documents[$data->index];
+    return $this;
   }
 
+  /**
+   * Returns documents after filters, limits
+   * orders, and anything else that chains
+   * before it.
+   */
   public function get () {
     return $this->documents;
   }
 
+  /**
+   * Returns number of documents
+   */
+  public function count () {
+    return count($this->documents);
+  }
+
+  /**
+   * Returns all documents in the collection.
+   */
   public function all () {
     $documents = $this->documents;
     return $documents;
@@ -97,11 +128,14 @@ class Collection {
          * key/value filter.
          */
         if (!is_array($value)) {
+
+          // If the field is not set.
           if (!isset($document->{$filter})) {
             $passes = false;
             continue;
           }
 
+          // If conditional does not match.
           if ($document->{$filter} !== $value) {
             $passes = false;
             continue;
@@ -201,8 +235,10 @@ class Collection {
         $filteredDocuments[] = $document;
     }
 
+    // Set documents to the filtered documents.
     $this->documents = $filteredDocuments;
 
+    // Return this instance for chaining.
     return $this;
   }
 
@@ -241,6 +277,9 @@ class Collection {
 
     $insertData->id = $id;
 
+    $insertData->createdAt = $this->timestamp->now();
+    $insertData->updatedAt = $this->timestamp->now();
+
     // Add new data to the documents
     $documents[] = $insertData;
 
@@ -254,6 +293,79 @@ class Collection {
     if (!$inserted)
       Error::throw('INSERT_DATA_ERROR', "Collection was unable to be overwrited");
 
+    return true;
+  }
+
+  /**
+   * Update data to the collection
+   */
+  public function update ($data) {
+    $documentsToUpdate = $this->documents;
+    $originalDocuments = $this->getDocuments();
+
+    // If there is a document to update.
+    if ($documentsToUpdate) {
+
+      // If the documentsToUpdate is not an array,
+      // we can assume it's a single document that is being
+      // updated.
+      if (!is_array($documentsToUpdate)) {
+        $docInfo = $this->documentById($this->documents->id, $originalDocuments);
+        $key = $docInfo->index;
+
+        // Update all of the keys
+        foreach ($data as $field => $value) {
+          $originalDocuments[$key]->{$field} = $value;
+        }
+
+        $originalDocuments[$key]->updatedAt = $this->timestamp->now();
+
+      // If it is an array, then it means we have multiple documents
+      // that are in need of updating. Iterate through each and
+      // update accordingly.
+      } else {
+
+        /**
+         * Filter out records that match the documents
+         * to be deleted.
+         */
+        foreach ($documentsToUpdate as $updateDoc) {
+          foreach ($originalDocuments as $key => $origDoc) {
+            if ($origDoc->id === $updateDoc->id) {
+              foreach ($data as $field => $value) {
+                $originalDocuments[$key]->{$field} = $value;
+              }
+
+              $originalDocuments[$key]->updatedAt = $this->timestamp->now();
+            }
+          }
+        }
+      }
+    } else {
+
+      // Return false here because nothing needs
+      // to be updated.
+      return false;
+    }
+
+    // Rebase the array element keys.
+    $originalDocuments = array_values($originalDocuments);
+
+    // Convert to json
+    $json = json_encode($originalDocuments, JSON_PRETTY_PRINT);
+
+    // Attempt to write file
+    $updated = FileSystem::writeFile($this->path(), $json);
+
+    // If not deleted, throw an error.
+    if (!$updated)
+      Error::throw('UPDATE_ERROR', "Collection was unable to be overwrited");
+
+    /**
+     * @TODO:
+     *
+     * Think about returning a "X documents updated" return.
+     */
     return true;
   }
 
@@ -328,6 +440,10 @@ class Collection {
    * ==============================
    */
 
+  /**
+   * Orders by a field (asc, or desc).
+   * @TODO: Add ability to order by deep nested array/object
+   */
   public function orderBy($field, $direction = 'asc') {
     $documents = $this->documents;
 
@@ -341,23 +457,28 @@ class Collection {
       });
     }
 
+    // Update the documents
     $this->documents = $documents;
 
+    // Return this instance
     return $this;
   }
 
-  public function limit($limit) {
+  /**
+   * Limit the number of results that are returned
+   */
+  public function limit($limit, $offset = 0) {
     $documents = $this->documents;
     $limitedDocuments = (object) [];
 
-    $count = 0;
-    foreach ($documents as $id => $document) {
-      if ($count >= $limit) continue;
-      $limitedDocuments->{$id} = $document;
-      $count++;
+    for ($i = 0; $i < $limit; $i++) {
+      $limitedDocuments[] = $documents[$i];
     }
 
+    // Set the documents to the limited documents
     $this->documents = $limitedDocuments;
+
+    // Return instance.
     return $this;
   }
 
@@ -367,6 +488,13 @@ class Collection {
    * ==============================
    */
 
+  /**
+   * Find a document by it's id in an array
+   * of documents.
+   *
+   * Returns the index and the document data in
+   * object format.
+   */
   private function documentById ($id, $documents) {
     $index = false;
     $doc = false;

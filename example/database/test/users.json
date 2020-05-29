@@ -10,13 +10,28 @@
         "email": "test@test.com"
     },
     {
-        "username": "Bob",
+        "username": "irate2",
         "email": "bob@test.com",
         "id": "5ed0fa4043342"
     },
     {
-        "username": "Bob",
+        "username": "irate2",
         "email": "bob@test.com",
         "id": "5ed0fc9e67aec"
+    },
+    {
+        "username": "etari",
+        "email": "matt@irate.dev",
+        "id": "5ed12898265e8",
+        "createdAt": 1590765720,
+        "updatedAt": 1590765720
+    },
+    {
+        "username": "etari2",
+        "email": "matt@irate.dev",
+        "expiresAt": 1591630099,
+        "id": "5ed12a1300422",
+        "createdAt": 1590766099,
+        "updatedAt": 1590766099
     }
 ]

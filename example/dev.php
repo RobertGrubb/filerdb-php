@@ -10,24 +10,8 @@ $filerdb = new FilerDB\Instance([ 'DATABASE_PATH' => __DIR__ . '/database/' ]);
 $data = $filerdb
   ->database('test')
   ->collection('users')
-  ->filter(['age' => 10])
-  ->orderBy('username', 'desc')
-  ->limit(1)
-  ->get();
-
-print_r($data);
-
-// Inserts a new user
-$filerdb
-  ->database('test')
-  ->collection('users')
   ->insert([
-    'username' => 'Bob',
-    'email' => 'bob@test.com'
+    'username' => 'etari2',
+    'email' => 'matt@irate.dev',
+    'expiresAt' => $filerdb->timestamp->days(10)
   ]);
-
-// Deleting a document with filters
-$filerdb
-  ->database('test')
-  ->collection('users')
-  ->delete();

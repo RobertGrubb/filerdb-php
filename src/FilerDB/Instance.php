@@ -3,6 +3,7 @@
 namespace FilerDB;
 
 use FilerDB\Core\Utilities\Error;
+use FilerDB\Core\Utilities\Timestamp;
 
 use FilerDB\Core\Libraries\Database;
 use FilerDB\Core\Libraries\Databases;
@@ -29,6 +30,12 @@ class Instance
   public $databases = null;
 
   /**
+   * Timestamp instance holder
+   * @var FilerDB\Core\Libraries\Timestamp
+   */
+  public $timestamp = null;
+
+  /**
    * Class constructor
    */
   public function __construct($config = null) {
@@ -52,6 +59,7 @@ class Instance
   private function _initialize() {
     if (!$this->config->DATABASE_PATH) Error::throw('NO_DATABASE_PATH');
     $this->databases  = new Databases($this->config);
+    $this->timestamp = new Timestamp($this->config);
   }
 
   public function database($database) {
