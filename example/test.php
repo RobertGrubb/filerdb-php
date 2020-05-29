@@ -6,7 +6,9 @@ require_once __DIR__ . '/../src/FilerDB.php';
 use FilerDB\Instance;
 
 // Instantiate Database
-$filerdb = new Instance([ 'DATABASE_PATH' => __DIR__ . '/database/' ]);
+$filerdb = new Instance([
+  'path' => __DIR__ . '/database/'
+]);
 
 // Create a new database
 $filerdb->databases->create('dev');

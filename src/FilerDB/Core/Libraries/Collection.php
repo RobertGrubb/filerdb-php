@@ -2,8 +2,9 @@
 
 namespace FilerDB\Core\Libraries;
 
+use FilerDB\Core\Exceptions\FilerDBException;
+
 // Utilities
-use FilerDB\Core\Utilities\Error;
 use FilerDB\Core\Utilities\FileSystem;
 use FilerDB\Core\Utilities\Timestamp;
 
@@ -46,7 +47,8 @@ class Collection {
   public function __construct ($config = null, $database, $collection) {
 
     // If config is null, throw an error.
-    if (is_null($config)) Error::throw('NO_CONFIG_PRESENT');
+    if (is_null($config))
+      throw new FilerDBException('No configuration found in Libarires\\Collection');
 
     // Set the configuration
     $this->config = $config;
@@ -226,7 +228,7 @@ class Collection {
               $passes = false;
             }
           } else {
-            Error::throw('FILTER_ERROR', 'Format must be an array with a field, conditional, and value.');
+            throw new FilerDBException('Format must be an array with a field, conditional, and value.');
           }
         }
       }
@@ -255,7 +257,7 @@ class Collection {
 
     // Check if the data is a correct format
     if (!is_array($data) && !is_object($data))
-      Error::throw('INSERT_DATA_ERROR', 'Must be an array or object');
+      throw new FilerDBException('Insert data must be an array or object');
 
     // Start insertData as an empty object
     $insertData = (object) [];
@@ -273,7 +275,7 @@ class Collection {
 
     // If the id already set?
     if ($this->documentById($id, $documents) !== false)
-      Error::throw('INSERT_DATA_ERROR', "Document with id:$id already exists");
+      throw new FilerDBException("Document with id:$id already exists");
 
     $insertData->id = $id;
 
@@ -291,7 +293,7 @@ class Collection {
 
     // If not inserted, throw an error.
     if (!$inserted)
-      Error::throw('INSERT_DATA_ERROR', "Collection was unable to be overwrited");
+      throw new FilerDBException("Collection was unable to be overwrited");
 
     return true;
   }
@@ -359,7 +361,7 @@ class Collection {
 
     // If not deleted, throw an error.
     if (!$updated)
-      Error::throw('UPDATE_ERROR', "Collection was unable to be overwrited");
+      throw new FilerDBException("Collection was unable to be overwrited");
 
     /**
      * @TODO:
@@ -383,7 +385,7 @@ class Collection {
 
     // If not deleted, throw an error.
     if (!$emptied)
-      Error::throw('EMPTY_ERROR', "Collection was unable to be emptied");
+      throw new FilerDBException("Collection was unable to be emptied");
 
     return true;
   }
@@ -402,7 +404,7 @@ class Collection {
      * Warn them to use ->empty() instead.
      */
     if (count($documentsToDelete) === count($originalDocuments)) {
-      Error::throw('DELETE_ALL_WARNING', 'Please use ->empty() to delete all records');
+      throw new FilerDBException("Please use ->empty() to delete all records");
       return false;
     }
 
@@ -429,7 +431,7 @@ class Collection {
 
     // If not deleted, throw an error.
     if (!$deleted)
-      Error::throw('DELETE_ERROR', "Collection was unable to be overwrited");
+      throw new FilerDBException("Collection was unable to be overwrited");
 
     return true;
   }
@@ -528,7 +530,7 @@ class Collection {
     try {
       $contents = json_decode($contents);
     } catch (\Exception $e) {
-      Error::throw('COLLECTION_READ_ERROR', "$this->collection.json is damaged");
+      throw new FilerDBException("$this->collection.json is damaged");
     }
 
     return $contents;

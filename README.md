@@ -5,10 +5,8 @@ A simplistic PHP flat file database designed to get your application up and runn
 # Todo
 
 - [ ] Update configuration to include attempting database creation
-- [ ] Add forward slash at end of path if not provided
 - [ ] Make filtering a little easier when there are conditionals.
 - [ ] Ability to offset.
-- [ ] Better error handling
 - [ ] Database backups?
 
 # Usage

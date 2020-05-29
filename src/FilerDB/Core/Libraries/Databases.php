@@ -2,8 +2,9 @@
 
 namespace FilerDB\Core\Libraries;
 
-use FilerDB\Core\Utilities\Error;
 use FilerDB\Core\Utilities\FileSystem;
+
+use FilerDB\Core\Exceptions\FilerDBException;
 
 class Databases {
 
@@ -25,7 +26,8 @@ class Databases {
   public function __construct ($config = null) {
 
     // If config is null, throw an error.
-    if (is_null($config)) Error::throw('NO_CONFIG_PRESENT');
+    if (is_null($config))
+      throw new FilerDBException('No configuration found in Libarires\\Databases');
 
     // Set the configuration
     $this->config = $config;
@@ -72,9 +74,9 @@ class Databases {
    */
   public function create($database) {
     $exists = $this->exists($database);
-    if ($exists) Error::throw('DATABASE_EXISTS', "$database already exists");
+    if ($exists) throw new FilerDBException('Database already exists');
     $created = FileSystem::createDirectory($this->path($database));
-    if (!$created) Error::throw('DATABASE_NOT_CREATED', "$database was unable to be created");
+    if (!$created) throw new FilerDBException('Database was unable to be created');
     $this->retrieveDatabases();
     return true;
   }
@@ -86,9 +88,9 @@ class Databases {
    */
   public function delete($database) {
     $exists = $this->exists($database);
-    if (!$exists) Error::throw('DATABASE_NOT_EXIST', "$database does not exist");
+    if (!$exists) throw new FilerDBException('Database does not exist');
     $removed = FileSystem::removeDirectory($this->path($database));
-    if (!$removed) Error::throw('DATABASE_DELETE_FAILED', "$database was unable to be deleted");
+    if (!$removed) throw new FilerDBException('Database was unable to be deleted');
     $this->retrieveDatabases();
     return true;
   }
@@ -115,6 +117,10 @@ class Databases {
     $this->databases = $result;
   }
 
+  /**
+   * Builds the path for the database in the file system.
+   * @return string $path
+   */
   private function path ($database) {
     $path = $this->config->DATABASE_PATH . DIRECTORY_SEPARATOR . $database . DIRECTORY_SEPARATOR;
     return $path;

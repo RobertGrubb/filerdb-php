@@ -2,7 +2,7 @@
 
 namespace FilerDB\Core\Utilities;
 
-use FilerDB\Core\Utilities\Error;
+use FilerDB\Core\Exceptions\FilerDBException;
 
 class FileSystem {
 
@@ -12,22 +12,32 @@ class FileSystem {
    * ==============================
    */
 
+  /**
+   * Attempts to write a file in the filesystem.
+   * @param  string $file
+   * @param  mixed $data
+   * @return boolean
+   */
   public static function writeFile ($file, $data) {
     try {
       file_put_contents($file, $data);
     } catch (Exception $e) {
-      Error::throw('FILE_CREATE_FAIL');
+      throw new FilerDBException($file . " could not be created");
       return false;
     }
 
     return true;
   }
 
+  /**
+   * Deletes a file in the filesystem, throws an error
+   * if an exception is encountered.
+   */
   public static function deleteFile ($file) {
     try {
       unlink($file);
     } catch (Exception $e) {
-      Error::throw('FILE_DELETE_FAIL');
+      throw new FilerDBException($file . " was unable to be deleted");
       return false;
     }
 
@@ -41,6 +51,11 @@ class FileSystem {
    * ==============================
    */
 
+  /**
+   * Checks if path exists
+   * @param  string $dir
+   * @return boolean
+   */
   public static function pathExists ($dir) {
     if (!file_exists($dir)) {
       return false;
@@ -49,6 +64,11 @@ class FileSystem {
     return true;
   }
 
+  /**
+   * Checks if src is writable
+   * @param  string $src
+   * @return boolean
+   */
   public static function isWritable ($src) {
     if (is_writable($src)) {
       return false;
@@ -57,6 +77,11 @@ class FileSystem {
     return true;
   }
 
+  /**
+   * Attempts to make a directory
+   * @param  string $dir
+   * @return boolean
+   */
   public static function createDirectory ($dir) {
     if (!mkdir($dir, 0777)) {
       return false;
@@ -65,6 +90,11 @@ class FileSystem {
     return true;
   }
 
+  /**
+   * Removes a directory and all of it's contents
+   * @param  string $src
+   * @return boolean
+   */
   public static function removeDirectory ($src) {
     $dir = opendir($src);
 

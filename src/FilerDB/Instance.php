@@ -2,7 +2,8 @@
 
 namespace FilerDB;
 
-use FilerDB\Core\Utilities\Error;
+use FilerDB\Core\Exceptions\FilerDBException;
+
 use FilerDB\Core\Utilities\Timestamp;
 
 use FilerDB\Core\Libraries\Database;
@@ -26,10 +27,15 @@ class Instance
 
   /**
    * Database instance holder
-   * @var FilerDB\Core\Libraries\Database
+   * @var FilerDB\Core\Libraries\Databases
    */
   public $databases = null;
 
+  /**
+   * Database instance holder for the selected
+   * database in the config.
+   * @var FilerDB\Core\Libraries\Database
+   */
   public $defaultDatabase = null;
 
   /**
@@ -68,10 +74,13 @@ class Instance
    * Initializes the database
    */
   private function _initialize() {
-    if (!$this->config->DATABASE_PATH) Error::throw('NO_DATABASE_PATH');
+    if (!$this->config->DATABASE_PATH)
+      throw new FilerDBException("No database path provided.");
+
     $this->databases  = new Databases($this->config);
     $this->timestamp = new Timestamp($this->config);
 
+    // Check if the default database was provided in the config.
     $this->_checkDefaultDatabase();
   }
 
@@ -94,11 +103,11 @@ class Instance
 
     // If default database is not set, error.
     if (!$this->defaultDatabase)
-      Error::throw('DATABASE_NOT_SELECTED', "A default database must be selected");
+      throw new FilerDBException("A default database must be selected");
 
     // If the collection does not exist
     if (!$this->defaultDatabase->collectionExists($collection))
-      Error::throw('COLLECTION_NOT_EXIST', "$collection does not exist");
+      throw new FilerDBException("$collection does not exist");
 
     // Return a new collection instantiation.
     return new Collection($this->config, $this->config->database, $collection);
@@ -110,7 +119,10 @@ class Instance
    */
   public function selectDatabase ($database) {
     $exists = $this->databases->exists($this->config->database);
-    if (!$exists) Error::throw('DATABASE_NOT_FOUND', "Database not found");
+
+    if (!$exists)
+      throw new FilerDBException($this->config->database . " not found");
+
     $this->defaultDatabase = new Database($this->config, $this->config->database);
   }
 
@@ -145,7 +157,11 @@ class Instance
       if (!is_array($config)) return false;
 
       foreach ($config as $key => $val) {
-        if ($key === 'path') {
+
+        // Make sure path sets DATABASE_PATH for
+        // backwards compatibility.
+        if ($key === 'path' || $key === 'DATABASE_PATH') {
+          if (substr($val, -1) !== '/') $val = $val . '/';
           $this->set('DATABASE_PATH', $val);
         } else {
           $this->set($key, $val);

@@ -2,7 +2,8 @@
 
 namespace FilerDB\Core\Libraries;
 
-use FilerDB\Core\Utilities\Error;
+use FilerDB\Core\Exceptions\FilerDBException;
+
 use FilerDB\Core\Utilities\FileSystem;
 
 use FilerDB\Core\Libraries\Collection;
@@ -27,7 +28,8 @@ class Database {
   public function __construct ($config = null, $database) {
 
     // If config is null, throw an error.
-    if (is_null($config)) Error::throw('NO_CONFIG_PRESENT');
+    if (is_null($config))
+      throw new FilerDBException('No configuration found in Libarires\\Database');
 
     // Set the configuration
     $this->config = $config;
@@ -36,9 +38,17 @@ class Database {
     $this->database = $database;
   }
 
+  /**
+   * Instantiates the collection class for this
+   * database. Also throws an error if the collection
+   * does not exist.
+   *
+   * @TODO: Create config variable that decides whether or not
+   * it auto creates the collection if it doesn't exist.
+   */
   public function collection($collection) {
     if (!$this->collectionExists($collection))
-      Error::throw('COLLECTION_NOT_EXIST', "$collection does not exist");
+      throw new FilerDBException('Collection does not exist');
 
     return new Collection($this->config, $this->database, $collection);
   }
@@ -56,9 +66,9 @@ class Database {
   public function createCollection($collection) {
     $collectionPath = $this->path() . $collection . '.json';
     $exists = $this->collectionExists($collection);
-    if ($exists) Error::throw('COLLECTION_EXISTS', "$collection already exists");
+    if ($exists) throw new FilerDBException('Collection already exists');
     $created = FileSystem::writeFile($collectionPath, json_encode([]));
-    if (!$created) Error::throw('COLLECTION_NOT_CREATED', "$collection was unable to be created");
+    if (!$created) throw new FilerDBException('Collection was unable to be created');
     return true;
   }
 
@@ -69,9 +79,9 @@ class Database {
   public function deleteCollection($collection) {
     $collectionPath = $this->path() . $collection . '.json';
     $exists = $this->collectionExists($collection);
-    if (!$exists) Error::throw('COLLECTION_NOT_EXIST', "$collection does not exist");
+    if (!$exists) throw new FilerDBException('Collection does not exist');
     $removed = FileSystem::deleteFile($collectionPath);
-    if (!$removed) Error::throw('COLLECTION_DELETE_FAILED', "$collection was unable to be deleted");
+    if (!$removed) throw new FilerDBException('Collection was unable to be deleted');
     return true;
   }
 
@@ -120,6 +130,10 @@ class Database {
     return $result;
   }
 
+  /**
+   * Builds the path for the database in the file system.
+   * @return string $path
+   */
   private function path () {
     $path = $this->config->DATABASE_PATH . DIRECTORY_SEPARATOR . $this->database . DIRECTORY_SEPARATOR;
     return $path;
