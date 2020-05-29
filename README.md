@@ -4,9 +4,12 @@ A simplistic PHP flat file database designed to get your application up and runn
 
 # Todo
 
+- [ ] Update configuration to include attempting database creation
 - [ ] Add forward slash at end of path if not provided
 - [ ] Make filtering a little easier when there are conditionals.
 - [ ] Ability to offset.
+- [ ] Better error handling
+- [ ] Database backups?
 
 # Usage
 
@@ -18,7 +21,7 @@ Please make sure your database directory has correct permissions for READ and WR
 use FilerDB\Instance;
 
 // Instantiate Database
-$filerdb = new Instance([ 'DATABASE_PATH' => __DIR__ . '/database/' ]);
+$filerdb = new Instance([ 'path' => __DIR__ . '/database/' ]);
 ```
 
 ### Creating a database
@@ -27,10 +30,58 @@ $filerdb = new Instance([ 'DATABASE_PATH' => __DIR__ . '/database/' ]);
 $filerdb->databases->create('dev');
 ```
 
+### Check if database exists
+
+```
+$filerdb->databases->exists('dev'); // Returns true or false
+```
+
+### List all databases
+
+```
+$filerdb->databases->list(); // Returns array
+```
+
 ### Deleting a database
 
 ```
 $filerdb->databases->delete('dev');
+```
+
+### Selecting a default database
+
+Selecting a default database allows you to not have to specify the database on every call. Please refer to the below code on how to do that.
+
+```
+// Specify it in the configuration:
+$filerdb = new Instance([
+  'path' => __DIR__ . '/database/',
+  'database' => 'database_name'
+]);
+```
+
+or
+
+```
+$filerdb->selectDatabase('database_name');
+```
+
+With the above, you can now do the following:
+
+```
+$filerdb->collection('users')->all(); // Notice no ->database()
+```
+
+### List collections in a database
+
+```
+$filerdb->database('dev')->collections(); // Returns array
+```
+
+### Check if collection exists
+
+```
+$filerdb->database('dev')->collectionExists('dev'); // Returns true of false
 ```
 
 ### Creating a collection
