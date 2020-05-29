@@ -13,6 +13,8 @@ A simplistic PHP flat file database designed to get your application up and runn
 
 # Usage
 
+Please make sure your database directory has correct permissions for READ and WRITE.
+
 ```
 use FilerDB\Instance;
 
