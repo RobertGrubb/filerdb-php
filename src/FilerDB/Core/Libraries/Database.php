@@ -57,7 +57,7 @@ class Database {
     $collectionPath = $this->path() . $collection . '.json';
     $exists = $this->collectionExists($collection);
     if ($exists) Error::throw('COLLECTION_EXISTS', "$collection already exists");
-    $created = FileSystem::writeFile($collectionPath, json_encode((object) []));
+    $created = FileSystem::writeFile($collectionPath, json_encode([]));
     if (!$created) Error::throw('COLLECTION_NOT_CREATED', "$collection was unable to be created");
     return true;
   }

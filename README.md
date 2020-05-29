@@ -5,15 +5,13 @@ A simplistic PHP flat file database designed to get your application up and runn
 # Todo
 
 - [ ] Ability to update a collection document.
-- [ ] Ability to delete a collection document.
-- [ ] Ability to filter by nested objects.
-- [ ] Ability to order by fields
-- [ ] Ability to limit
 - [ ] Ability to offset.
 
 # Usage
 
 Please make sure your database directory has correct permissions for READ and WRITE.
+
+Be sure to also checkout the example folder, as there may be some more examples shown there until I have a chance to get a decent documentation up.
 
 ```
 use FilerDB\Instance;

@@ -27,11 +27,11 @@ class Error {
         break;
 
       case 'DOCUMENT_CREATE_FAIL':
-        $errorMessage = $message || 'Document creation failed';
+        $errorMessage = !is_null($message) ? $message : 'Document creation failed';
         break;
 
       default:
-        $errorMessage = $message || $errorMessage;
+        $errorMessage = !is_null($message) ? $message : $errorMessage;
         break;
     }
 
@@ -40,6 +40,8 @@ class Error {
       'code'  => $code,
       'message' => $errorMessage
     ]));
+
+    exit;
   }
 
 }

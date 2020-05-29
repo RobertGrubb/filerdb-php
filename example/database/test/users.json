@@ -1,10 +1,22 @@
-{
-    "5ed088c3ba646": {
-        "username": "irate",
-        "email": "matt@grubb.com"
-    },
-    "5ed08adb8b8c1": {
+[
+    {
+        "id": "5ed08adb8b8c1",
         "username": "test",
         "email": "test@test.com"
+    },
+    {
+        "id": "5ed08adb8b8c2",
+        "username": "albert",
+        "email": "test@test.com"
+    },
+    {
+        "username": "Bob",
+        "email": "bob@test.com",
+        "id": "5ed0fa4043342"
+    },
+    {
+        "username": "Bob",
+        "email": "bob@test.com",
+        "id": "5ed0fc9e67aec"
     }
-}
+]
