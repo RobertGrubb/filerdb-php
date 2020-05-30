@@ -71,15 +71,27 @@ class Instance
     $this->_setInitialConfig([
 
       /**
-       * This is the main path for FilerDB.
+       * This is the root path for FilerDB.
        */
-      'path' => false,
+      'root' => false,
+
+      /**
+       * If the root path does not exist, try
+       * and create it.
+       */
+      'createRootIfNotExist' => false,
 
       /**
        * If the database path does not exist, try
        * and create it.
        */
       'createDatabaseIfNotExist' => false,
+
+      /**
+       * If the collection does not exist, attempt
+       * to create it.
+       */
+      'createCollectionIfNotExist' => false,
 
       /**
        * If the insert and update logic handles
@@ -111,19 +123,19 @@ class Instance
   private function _runCoreChecks () {
 
     // Builds the path for the database.
-    $databasePath = FileSystem::databasePath($this->config->DATABASE_PATH);
+    $rootPath = FileSystem::rootPath($this->config->root);
 
     /**
      * If database path does not exist,
      * we have a few things we can do.
      */
-    if (!FileSystem::pathExists($databasePath)) {
+    if (!FileSystem::pathExists($rootPath)) {
 
       // Make sure the config var is set to true.
-      if ($this->config->createDatabaseIfNotExist === true) {
+      if ($this->config->createRootIfNotExist === true) {
 
         // Attempt to create the directory
-        $created = FileSystem::createDirectory($databasePath);
+        $created = FileSystem::createDirectory($rootPath);
 
         // If not created, then a permissions error probably happened.
         if (!$created)
@@ -131,7 +143,7 @@ class Instance
       } else {
 
         // Config not set, simply error.
-        throw new FilerDBException('Database path not found');
+        throw new FilerDBException('Root path not found');
       }
     }
   }
@@ -140,7 +152,7 @@ class Instance
    * Initializes the database
    */
   private function _initialize () {
-    if (!$this->config->DATABASE_PATH)
+    if (!$this->config->root)
       throw new FilerDBException("No database path provided.");
 
     $this->databases = new Databases($this->config);
@@ -155,6 +167,31 @@ class Instance
    * Start the chain with database.
    */
   public function database ($database) {
+    if (!$this->databases->exists($database)) {
+
+      /**
+       * If set to create when non-existent
+       */
+      if ($this->config->createDatabaseIfNotExist === true) {
+
+        // Get the database path
+        $databasePath = FileSystem::databasePath(
+          $this->config->root,
+          $database
+        );
+
+        // Attempt to create the directory
+        $created = FileSystem::createDirectory($databasePath);
+
+        // If not created, then a permissions error probably happened.
+        if (!$created)
+          throw new FilerDBException('Database not found, also unable to create database path.');
+
+      } else {
+        throw new FilerDBException('Database does not exist.');
+      }
+    }
+
     return new Database($this->config, $database);
   }
 
@@ -173,8 +210,28 @@ class Instance
       throw new FilerDBException("A default database must be selected");
 
     // If the collection does not exist
-    if (!$this->defaultDatabase->collectionExists($collection))
-      throw new FilerDBException("$collection does not exist");
+    if (!$this->defaultDatabase->collectionExists($collection)) {
+
+      // If the collection does not exist, and config says to attempt
+      // to create it, do that here.
+      if ($this->config->createCollectionIfNotExist === true) {
+        $collectionPath = FileSystem::collectionPath(
+          $this->config->root,
+          $this->config->database,
+          $collection
+        );
+
+        // Attempt to create the directory
+        $created = FileSystem::writeFile($collectionPath, json_encode([]));
+
+        // If not created, then a permissions error probably happened.
+        if (!$created)
+          throw new FilerDBException('Path not found, also unable to create database path.');
+
+      } else {
+        throw new FilerDBException("$collection does not exist");
+      }
+    }
 
     // Return a new collection instantiation.
     return new Collection($this->config, $this->config->database, $collection);
@@ -184,13 +241,37 @@ class Instance
    * Selects a default database for all collection calls
    * to go to.
    */
-  public function selectDatabase ($database) {
-    $exists = $this->databases->exists($this->config->database);
+  public function selectDatabase ($database = null) {
+    $database = !is_null($database) ? $database : $this->config->database;
 
-    if (!$exists)
-      throw new FilerDBException($this->config->database . " not found");
+    if (!$database) throw new FilerDBException('No database provided');
 
-    $this->defaultDatabase = new Database($this->config, $this->config->database);
+    if (!$this->databases->exists($database)) {
+
+      /**
+       * If set to create when non-existent
+       */
+      if ($this->config->createDatabaseIfNotExist === true) {
+
+        // Get the database path
+        $databasePath = FileSystem::databasePath(
+          $this->config->root,
+          $database
+        );
+
+        // Attempt to create the directory
+        $created = FileSystem::createDirectory($databasePath);
+
+        // If not created, then a permissions error probably happened.
+        if (!$created)
+          throw new FilerDBException('Database not found, also unable to create database path.');
+
+      } else {
+        throw new FilerDBException('Database does not exist.');
+      }
+    }
+
+    $this->defaultDatabase = new Database($this->config, $database);
   }
 
   /**
@@ -225,11 +306,10 @@ class Instance
 
       foreach ($config as $key => $val) {
 
-        // Make sure path sets DATABASE_PATH for
+        // Make sure path sets root for
         // backwards compatibility.
-        if ($key === 'path' || $key === 'DATABASE_PATH') {
-          if (substr($val, -1) !== '/') $val = $val . '/';
-          $this->set('DATABASE_PATH', $val);
+        if ($key === 'path' || $key === 'root') {
+          $this->set('root', FileSystem::rootPath($val));
         } else {
           $this->set($key, $val);
         }

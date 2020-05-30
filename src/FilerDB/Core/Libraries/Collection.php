@@ -9,8 +9,8 @@ use FilerDB\Core\Utilities\FileSystem;
 use FilerDB\Core\Utilities\Timestamp;
 use FilerDB\Core\Utilities\Dot;
 
-// Libraries
-use FilerDB\Core\Libraries\Document;
+// Helpers
+use FilerDB\Core\Helpers\Document;
 
 class Collection {
 
@@ -48,6 +48,12 @@ class Collection {
   private $response = [];
 
   /**
+   * Holds the path for the collection in the filesystem.
+   * @var string
+   */
+  private $collectionPath = null;
+
+  /**
    * Class constructor
    */
   public function __construct ($config = null, $database, $collection) {
@@ -65,12 +71,20 @@ class Collection {
     // Set the current database
     $this->database = $database;
 
-    // Retrieve the current database.
+    // Retrieve the current collection.
     $this->collection = $collection;
+
+    // Build the collection path
+    $this->collectionPath = FileSystem::collectionPath(
+      $this->config->root,
+      $this->database,
+      $this->collection
+    );
 
     // Holder for documents that should be returned
     $this->documents = $this->getDocuments();
 
+    // Holder for response that is returned
     $this->response  = $this->documents;
   }
 
@@ -85,7 +99,7 @@ class Collection {
    */
   public function id ($id) {
     $documents = $this->documents;
-    $data = $this->documentById($id, $documents);
+    $data = Document::byId($documents, $id);
     if ($data === false) return false;
     $this->documents = $documents[$data->index];
     $this->response  = $this->documents;
@@ -344,7 +358,7 @@ class Collection {
     $id = (isset($insertData->id) ? $insertData->id : uniqid());
 
     // If the id already set?
-    if ($this->documentById($id, $documents) !== false)
+    if (Document::exists($documents, $id))
       throw new FilerDBException("Document with id:$id already exists");
 
     $insertData->id = $id;
@@ -365,7 +379,7 @@ class Collection {
     $json = json_encode($documents, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $inserted = FileSystem::writeFile($this->path(), $json);
+    $inserted = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not inserted, throw an error.
     if (!$inserted)
@@ -388,7 +402,7 @@ class Collection {
       // we can assume it's a single document that is being
       // updated.
       if (!is_array($documentsToUpdate)) {
-        $docInfo = $this->documentById($this->documents->id, $originalDocuments);
+        $docInfo = Document::byId($originalDocuments, $this->documents->id);
         $key = $docInfo->index;
 
         // Update all of the keys
@@ -435,7 +449,7 @@ class Collection {
     $json = json_encode($originalDocuments, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $updated = FileSystem::writeFile($this->path(), $json);
+    $updated = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not deleted, throw an error.
     if (!$updated)
@@ -459,7 +473,7 @@ class Collection {
     $json = json_encode($documents, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $emptied = FileSystem::writeFile($this->path(), $json);
+    $emptied = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not deleted, throw an error.
     if (!$emptied)
@@ -505,7 +519,7 @@ class Collection {
     $json = json_encode($originalDocuments, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $deleted = FileSystem::writeFile($this->path(), $json);
+    $deleted = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not deleted, throw an error.
     if (!$deleted)
@@ -609,41 +623,12 @@ class Collection {
   }
 
   /**
-   * Find a document by it's id in an array
-   * of documents.
-   *
-   * Returns the index and the document data in
-   * object format.
-   */
-  private function documentById ($id, $documents) {
-    $index = false;
-    $doc = false;
-
-    foreach ($documents as $i => $document) {
-
-      if ($document->id === $id) {
-        $index = $i;
-        $doc = $document;
-      } else {
-        continue;
-      }
-    }
-
-    if (!$index) return false;
-
-    return (object) [
-      'index' => $index,
-      'document' => $doc
-    ];
-  }
-
-  /**
    * Get all documents in object format.
    * If the file can not be decoded, throw
    * an error because the data is malformed.
    */
   private function getDocuments () {
-    $contents = file_get_contents ($this->path());
+    $contents = file_get_contents ($this->collectionPath);
 
     try {
       $contents = json_decode($contents);
@@ -652,18 +637,5 @@ class Collection {
     }
 
     return $contents;
-  }
-
-  /**
-   * Returns a path for the current collection.
-   */
-  private function path () {
-    $path = $this->config->DATABASE_PATH .
-            DIRECTORY_SEPARATOR .
-            $this->database .
-            DIRECTORY_SEPARATOR .
-            $this->collection . '.json';
-
-    return $path;
   }
 }

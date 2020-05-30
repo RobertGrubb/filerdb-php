@@ -69,13 +69,15 @@ class Databases {
 
   /**
    * Creates a new directory for the database in
-   * the DATABASE_PATH
+   * the root
    * @param string $database
    */
   public function create($database) {
     $exists = $this->exists($database);
     if ($exists) throw new FilerDBException('Database already exists');
-    $created = FileSystem::createDirectory($this->path($database));
+    $created = FileSystem::createDirectory(
+      FileSystem::databasePath($this->config->root, $database)
+    );
     if (!$created) throw new FilerDBException('Database was unable to be created');
     $this->retrieveDatabases();
     return true;
@@ -83,13 +85,15 @@ class Databases {
 
   /**
    * Delets a directory for the database in
-   * the DATABASE_PATH
+   * the root
    * @param string $database
    */
   public function delete($database) {
     $exists = $this->exists($database);
     if (!$exists) throw new FilerDBException('Database does not exist');
-    $removed = FileSystem::removeDirectory($this->path($database));
+    $removed = FileSystem::removeDirectory(
+      FileSystem::databasePath($this->config->root, $database)
+    );
     if (!$removed) throw new FilerDBException('Database was unable to be deleted');
     $this->retrieveDatabases();
     return true;
@@ -107,7 +111,7 @@ class Databases {
    */
   private function retrieveDatabases() {
     $result = [];
-    $databases = glob($this->config->DATABASE_PATH . '*' , GLOB_ONLYDIR);
+    $databases = glob($this->config->root . '*' , GLOB_ONLYDIR);
 
     foreach ($databases as $database) {
       $pathParts = explode('/', $database);
@@ -122,7 +126,7 @@ class Databases {
    * @return string $path
    */
   private function path ($database) {
-    $path = $this->config->DATABASE_PATH . DIRECTORY_SEPARATOR . $database . DIRECTORY_SEPARATOR;
+    $path = $this->config->root . DIRECTORY_SEPARATOR . $database . DIRECTORY_SEPARATOR;
     return $path;
   }
 
