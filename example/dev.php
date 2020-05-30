@@ -15,11 +15,21 @@ try {
     'createDatabaseIfNotExist' => true
   ]);
 
-  // Query with filters, orders, and limits
+  /**
+   * Example of limiting to 1 response, and
+   * offsetting it.
+   *
+   * limit(1, 1)
+   *
+   * @param Limiter
+   * @param Offset
+   *
+   * Offset is the array key of the response.
+   */
   $data = $filerdb
     ->database('test')
     ->collection('users')
-    ->filter(['location.state' => 'KY'])
+    ->limit(1, 1)
     ->get();
 
   print_r($data);

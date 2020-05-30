@@ -224,3 +224,15 @@ $filerdb
   ->limit(10)
   ->get();
 ```
+
+### Offsetting documents
+
+```
+// Pull upto 10 documents, but start at the
+// 9th array key.
+$filerdb
+  ->database('dev')
+  ->collection('users')
+  ->limit(10, 9)
+  ->get();
+```

@@ -43,6 +43,11 @@ class Collection {
   private $documents = [];
 
   /**
+   * The output of documents
+   */
+  private $response = [];
+
+  /**
    * Class constructor
    */
   public function __construct ($config = null, $database, $collection) {
@@ -81,6 +86,7 @@ class Collection {
     $data = $this->documentById($id, $documents);
     if ($data === false) return false;
     $this->documents = $documents[$data->index];
+    $this->response  = $this->documents;
     return $this;
   }
 
@@ -90,14 +96,14 @@ class Collection {
    * before it.
    */
   public function get () {
-    return $this->documents;
+    return $this->response;
   }
 
   /**
    * Returns number of documents
    */
   public function count () {
-    return count($this->documents);
+    return count($this->response);
   }
 
   /**
@@ -276,7 +282,7 @@ class Collection {
               $passes = false;
             }
           } else {
-            throw new FilerDBException('Format must be an array with a field, conditional, and value.');
+
           }
         }
       }
@@ -287,6 +293,9 @@ class Collection {
 
     // Set documents to the filtered documents.
     $this->documents = $filteredDocuments;
+
+    // Set the response as the same documents
+    $this->response  = $filteredDocuments;
 
     // Return this instance for chaining.
     return $this;
@@ -518,6 +527,9 @@ class Collection {
     // Update the documents
     $this->documents = $documents;
 
+    // Set the response
+    $this->response = $documents;
+
     // Return this instance
     return $this;
   }
@@ -527,17 +539,27 @@ class Collection {
    */
   public function limit($limit, $offset = 0) {
     $documents = $this->documents;
-    $limitedDocuments = (object) [];
+    $limitedDocuments = [];
 
-    for ($i = 0; $i < $limit; $i++) {
+    if ($offset > count($documents)) {
+      $this->response = [];
+      return $this;
+    }
+
+    for ($i = $offset; $i < ($limit + $offset); $i++) {
       // For those times when the limit is higher than document count.
       if (!isset($documents[$i])) continue;
 
       $limitedDocuments[] = $documents[$i];
     }
 
-    // Set the documents to the limited documents
-    $this->documents = $limitedDocuments;
+    /**
+     * One of the only methods to actually alter ONLY the
+     * response. Because of offsetting, we need an original
+     * documents array, as well as one to keep track of the
+     * offsetting.
+     */
+    $this->response = $limitedDocuments;
 
     // Return instance.
     return $this;

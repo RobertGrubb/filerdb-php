@@ -7,5 +7,23 @@
             "state": "KY"
         },
         "id": "5ed1b2957c6d9"
+    },
+    {
+        "username": "etari3",
+        "email": "matt@irate.dev",
+        "location": {
+            "country": "US",
+            "state": "KY"
+        },
+        "id": "5ed1b2957c6d92"
+    },
+    {
+        "username": "etari4",
+        "email": "matt@irate.dev",
+        "location": {
+            "country": "US",
+            "state": "KY"
+        },
+        "id": "5ed1b2957c6d93"
     }
 ]
