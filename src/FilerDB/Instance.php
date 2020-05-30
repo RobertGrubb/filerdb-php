@@ -76,10 +76,22 @@ class Instance
       'path' => false,
 
       /**
+       * If the root path does not exist, try
+       * and create it.
+       */
+      'createRootIfNotExist' => false,
+
+      /**
        * If the database path does not exist, try
        * and create it.
        */
       'createDatabaseIfNotExist' => false,
+
+      /**
+       * If the collection does not exist, attempt
+       * to create it.
+       */
+      'createCollectionIfNotExist' => false,
 
       /**
        * If the insert and update logic handles
@@ -120,7 +132,7 @@ class Instance
     if (!FileSystem::pathExists($databasePath)) {
 
       // Make sure the config var is set to true.
-      if ($this->config->createDatabaseIfNotExist === true) {
+      if ($this->config->createRootIfNotExist === true) {
 
         // Attempt to create the directory
         $created = FileSystem::createDirectory($databasePath);
