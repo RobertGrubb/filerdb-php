@@ -7,6 +7,7 @@ use FilerDB\Core\Exceptions\FilerDBException;
 // Utilities
 use FilerDB\Core\Utilities\FileSystem;
 use FilerDB\Core\Utilities\Timestamp;
+use FilerDB\Core\Utilities\Dot;
 
 // Libraries
 use FilerDB\Core\Libraries\Document;
@@ -131,16 +132,38 @@ class Collection {
          */
         if (!is_array($value)) {
 
-          // If the field is not set.
-          if (!isset($document->{$filter})) {
-            $passes = false;
-            continue;
-          }
+          /**
+           * If filter is a dot notation, handle it
+           * properly.
+           */
+          if (Dot::test($filter) === true) {
 
-          // If conditional does not match.
-          if ($document->{$filter} !== $value) {
-            $passes = false;
-            continue;
+            $dotVal = Dot::get($document, $filter);
+
+            if (!$dotVal) {
+              $passes = false;
+              continue;
+            }
+
+            if ($dotVal !== $value) {
+              $passes = false;
+              continue;
+            }
+
+          } else {
+
+            // If the field is not set.
+            if (!isset($document->{$filter})) {
+              $passes = false;
+              continue;
+            }
+
+
+            // If conditional does not match.
+            if ($document->{$filter} !== $value) {
+              $passes = false;
+              continue;
+            }
           }
         }
 
@@ -160,9 +183,34 @@ class Collection {
             $conditional = $value[1];
             $value = $value[2];
 
-            if (!isset($document->{$field})) {
-              $passes = false;
-              continue;
+            // Will be set based on following conditional
+            $documentValue = null;
+
+            /**
+             * If the field is dot notated, handle it
+             * properly.
+             */
+            if (Dot::test($field) === true) {
+
+              // Get the dot notation value
+              $dotVal = Dot::get($document, $field);
+
+              // If false, skip this.
+              if (!$dotVal) {
+                $passes = false;
+                continue;
+              }
+
+              // Set the document value.
+              $documentValue = $dotVal;
+            } else {
+
+              if (!isset($document->{$field})) {
+                $passes = false;
+                continue;
+              }
+
+              $documentValue = $document->{$field};
             }
 
             /**
@@ -170,7 +218,7 @@ class Collection {
              */
             if ($conditional === '=') {
 
-              if ($document->{$field} == $value) {
+              if ($documentValue == $value) {
                 $passes = true;
               } else {
                 $passes = false;
@@ -182,7 +230,7 @@ class Collection {
              */
             } else if ($conditional === '>=') {
 
-              if ($document->{$field} >= $value) {
+              if ($documentValue >= $value) {
                 $passes = true;
               } else {
                 $passes = false;
@@ -194,7 +242,7 @@ class Collection {
              */
             } elseif ($conditional === '>') {
 
-              if ($document->{$field} > $value) {
+              if ($documentValue > $value) {
                 $passes = true;
               } else {
                 $passes = false;
@@ -206,7 +254,7 @@ class Collection {
              */
             } elseif ($conditional === '<=') {
 
-              if ($document->{$field} <= $value) {
+              if ($documentValue <= $value) {
                 $passes = true;
               } else {
                 $passes = false;
@@ -218,7 +266,7 @@ class Collection {
              */
             } elseif ($conditional === '<') {
 
-              if ($document->{$field} < $value) {
+              if ($documentValue < $value) {
                 $passes = true;
               } else {
                 $passes = false;

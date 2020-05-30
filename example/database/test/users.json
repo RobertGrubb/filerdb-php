@@ -2,15 +2,10 @@
     {
         "username": "etari2",
         "email": "matt@irate.dev",
-        "expiresAt": 1591663888,
-        "id": "5ed1ae10e0a94",
-        "createdAt": 1590799888,
-        "updatedAt": 1590799888
-    },
-    {
-        "username": "etari2",
-        "email": "matt@irate.dev",
-        "expiresAt": 1591663904,
-        "id": "5ed1ae2045e4f"
+        "location": {
+            "country": "US",
+            "state": "KY"
+        },
+        "id": "5ed1b2957c6d9"
     }
 ]

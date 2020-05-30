@@ -12,7 +12,6 @@ try {
 
     // Optional configurations
     'includeTimestamps' => false,
-
     'createDatabaseIfNotExist' => true
   ]);
 
@@ -20,11 +19,10 @@ try {
   $data = $filerdb
     ->database('test')
     ->collection('users')
-    ->insert([
-      'username' => 'etari2',
-      'email' => 'matt@irate.dev',
-      'expiresAt' => $filerdb->timestamp->days(10)
-    ]);
+    ->filter(['location.state' => 'KY'])
+    ->get();
+
+  print_r($data);
 } catch (Exception $e) {
   echo $e->getMessage() . PHP_EOL;
 }
