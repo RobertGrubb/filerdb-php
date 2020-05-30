@@ -70,6 +70,8 @@ class Collection {
 
     // Holder for documents that should be returned
     $this->documents = $this->getDocuments();
+
+    $this->response  = $this->documents;
   }
 
   /**
@@ -95,7 +97,18 @@ class Collection {
    * orders, and anything else that chains
    * before it.
    */
-  public function get () {
+  public function get ($fields = false) {
+
+    /**
+     * If the columns parameter is provided,
+     * and is an array.
+     */
+    if (is_array($fields)) {
+      if (count($fields) >= 1) {
+        return $this->pickFieldsFromData($this->response, $fields);
+      }
+    }
+
     return $this->response;
   }
 
@@ -570,6 +583,25 @@ class Collection {
    * Helper methods
    * ==============================
    */
+
+  private function pickFieldsFromData ($data, $fields) {
+
+    print_r($data);
+
+    if (is_array($data)) {
+      foreach ($data as $documentKey => $document) {
+        foreach ($document as $field => $value) {
+          if (!in_array($field, $fields)) unset($data[$documentKey]->{$field});
+        }
+      }
+    } else {
+      foreach ($data as $field => $val) {
+        if (!in_array($field, $fields)) unset($data->{$field});
+      }
+    }
+
+    return $data;
+  }
 
   /**
    * Find a document by it's id in an array
