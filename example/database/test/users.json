@@ -1,77 +1,16 @@
 [
     {
-        "id": "5ed08adb8b8c1",
-        "username": "test",
-        "email": "test@test.com"
-    },
-    {
-        "id": "5ed08adb8b8c2",
-        "username": "albert",
-        "email": "test@test.com"
-    },
-    {
-        "username": "irate2",
-        "email": "bob@test.com",
-        "id": "5ed0fa4043342"
-    },
-    {
-        "username": "irate2",
-        "email": "bob@test.com",
-        "id": "5ed0fc9e67aec"
-    },
-    {
-        "username": "etari",
+        "username": "etari2",
         "email": "matt@irate.dev",
-        "id": "5ed12898265e8",
-        "createdAt": 1590765720,
-        "updatedAt": 1590765720
+        "expiresAt": 1591663888,
+        "id": "5ed1ae10e0a94",
+        "createdAt": 1590799888,
+        "updatedAt": 1590799888
     },
     {
         "username": "etari2",
         "email": "matt@irate.dev",
-        "expiresAt": 1591630099,
-        "id": "5ed12a1300422",
-        "createdAt": 1590766099,
-        "updatedAt": 1590766099
-    },
-    {
-        "username": "etari2",
-        "email": "matt@irate.dev",
-        "expiresAt": 1591631793,
-        "id": "5ed130b1bf806",
-        "createdAt": 1590767793,
-        "updatedAt": 1590767793
-    },
-    {
-        "username": "etari2",
-        "email": "matt@irate.dev",
-        "expiresAt": 1591631822,
-        "id": "5ed130cec5763",
-        "createdAt": 1590767822,
-        "updatedAt": 1590767822
-    },
-    {
-        "username": "etari2",
-        "email": "matt@irate.dev",
-        "expiresAt": 1591646560,
-        "id": "5ed16a60d5ec4",
-        "createdAt": 1590782560,
-        "updatedAt": 1590782560
-    },
-    {
-        "username": "etari2",
-        "email": "matt@irate.dev",
-        "expiresAt": 1591647747,
-        "id": "5ed16f030a80e",
-        "createdAt": 1590783747,
-        "updatedAt": 1590783747
-    },
-    {
-        "username": "etari2",
-        "email": "matt@irate.dev",
-        "expiresAt": 1591648148,
-        "id": "5ed17094be16b",
-        "createdAt": 1590784148,
-        "updatedAt": 1590784148
+        "expiresAt": 1591663904,
+        "id": "5ed1ae2045e4f"
     }
 ]

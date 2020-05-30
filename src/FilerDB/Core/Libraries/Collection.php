@@ -279,8 +279,14 @@ class Collection {
 
     $insertData->id = $id;
 
-    $insertData->createdAt = $this->timestamp->now();
-    $insertData->updatedAt = $this->timestamp->now();
+    /**
+     * If the configuration allows it, set the
+     * createdAt and updatedAt timestamps
+     */
+    if ($this->config->includeTimestamps === true) {
+      $insertData->createdAt = $this->timestamp->now();
+      $insertData->updatedAt = $this->timestamp->now();
+    }
 
     // Add new data to the documents
     $documents[] = $insertData;
@@ -320,7 +326,8 @@ class Collection {
           $originalDocuments[$key]->{$field} = $value;
         }
 
-        $originalDocuments[$key]->updatedAt = $this->timestamp->now();
+        if ($this->config->includeTimestamps)
+          $originalDocuments[$key]->updatedAt = $this->timestamp->now();
 
       // If it is an array, then it means we have multiple documents
       // that are in need of updating. Iterate through each and
@@ -338,7 +345,8 @@ class Collection {
                 $originalDocuments[$key]->{$field} = $value;
               }
 
-              $originalDocuments[$key]->updatedAt = $this->timestamp->now();
+              if ($this->config->includeTimestamps)
+                $originalDocuments[$key]->updatedAt = $this->timestamp->now();
             }
           }
         }

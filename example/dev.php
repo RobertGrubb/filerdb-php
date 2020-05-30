@@ -6,7 +6,14 @@ require_once __DIR__ . '/../src/FilerDB.php';
 try {
   // Instantiate Database
   $filerdb = new FilerDB\Instance([
-    'path' => __DIR__ . '/database'
+
+    // Required
+    'path' => __DIR__ . '/database',
+
+    // Optional configurations
+    'includeTimestamps' => false,
+
+    'createDatabaseIfNotExist' => true
   ]);
 
   // Query with filters, orders, and limits

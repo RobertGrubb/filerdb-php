@@ -6,6 +6,10 @@ use FilerDB\Core\Exceptions\FilerDBException;
 
 class FileSystem {
 
+  public static function databasePath ($path) {
+    return $path . DIRECTORY_SEPARATOR;
+  }
+
   /**
    * ==============================
    * File Methods

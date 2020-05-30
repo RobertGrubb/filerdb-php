@@ -4,7 +4,6 @@ A simplistic PHP flat file database designed to get your application up and runn
 
 # Todo
 
-- [ ] Update configuration to include attempting database creation
 - [ ] Make filtering a little easier when there are conditionals.
 - [ ] Ability to offset.
 - [ ] Database backups?
@@ -20,6 +19,32 @@ use FilerDB\Instance;
 
 // Instantiate Database
 $filerdb = new Instance([ 'path' => __DIR__ . '/database/' ]);
+```
+
+### Configuration
+
+```
+[
+
+  /**
+   * This is the main path for FilerDB.
+   */
+  'path' => __DIR__ . '/database',
+
+  /**
+   * If the database path does not exist, try
+   * and create it.
+   */
+  'createDatabaseIfNotExist' => false,
+
+  /**
+   * If the insert and update logic handles
+   * the createdAt and updatedAt timestamps
+   * automatically
+   */
+  'includeTimestamps' => false
+
+]
 ```
 
 ### Creating a database

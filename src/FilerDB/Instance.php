@@ -5,6 +5,7 @@ namespace FilerDB;
 use FilerDB\Core\Exceptions\FilerDBException;
 
 use FilerDB\Core\Utilities\Timestamp;
+use FilerDB\Core\Utilities\FileSystem;
 
 use FilerDB\Core\Libraries\Database;
 use FilerDB\Core\Libraries\Databases;
@@ -55,14 +56,38 @@ class Instance
   /**
    * Class constructor
    */
-  public function __construct($config = null) {
+  public function __construct ($config = null) {
 
     /**
      * Set the initial configuration variables.
      */
     $this->_setInitialConfig([
-      'DATABASE_PATH' => false
+
+      /**
+       * This is the main path for FilerDB.
+       */
+      'path' => false,
+
+      /**
+       * If the database path does not exist, try
+       * and create it.
+       */
+      'createDatabaseIfNotExist' => false,
+
+      /**
+       * If the insert and update logic handles
+       * the createdAt and updatedAt timestamps
+       * automatically
+       */
+      'includeTimestamps' => false
+
     ], $config);
+
+    /**
+     * Begins core checks, refer to method for
+     * more information.
+     */
+    $this->_runCoreChecks();
 
     /**
      * Initialize everything
@@ -71,9 +96,43 @@ class Instance
   }
 
   /**
+   * Handles required checks to make sure
+   * the database is in good standing.
+   *
+   * Checks for things like path existence, etc.
+   */
+  private function _runCoreChecks () {
+
+    // Builds the path for the database.
+    $databasePath = FileSystem::databasePath($this->config->DATABASE_PATH);
+
+    /**
+     * If database path does not exist,
+     * we have a few things we can do.
+     */
+    if (!FileSystem::pathExists($databasePath)) {
+
+      // Make sure the config var is set to true.
+      if ($this->config->createDatabaseIfNotExist === true) {
+
+        // Attempt to create the directory
+        $created = FileSystem::createDirectory($databasePath);
+
+        // If not created, then a permissions error probably happened.
+        if (!$created)
+          throw new FilerDBException('Path not found, also unable to create database path.');
+      } else {
+
+        // Config not set, simply error.
+        throw new FilerDBException('Database path not found');
+      }
+    }
+  }
+
+  /**
    * Initializes the database
    */
-  private function _initialize() {
+  private function _initialize () {
     if (!$this->config->DATABASE_PATH)
       throw new FilerDBException("No database path provided.");
 
@@ -99,7 +158,7 @@ class Instance
    * NOTE: You can still access the ->database logic if you need
    * to pull from a different database within the same code.
    */
-  public function collection($collection) {
+  public function collection ($collection) {
 
     // If default database is not set, error.
     if (!$this->defaultDatabase)
