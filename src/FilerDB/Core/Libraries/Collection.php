@@ -482,6 +482,9 @@ class Collection {
     $limitedDocuments = (object) [];
 
     for ($i = 0; $i < $limit; $i++) {
+      // For those times when the limit is higher than document count.
+      if (!isset($documents[$i])) continue;
+
       $limitedDocuments[] = $documents[$i];
     }
 
