@@ -19,11 +19,16 @@
     "nelexa/zip": "^3.3"
   },
   "require-dev": {
-    "phpunit/phpunit": "5.5.*"
+    "phpunit/phpunit": "7"
   },
   "autoload": {
     "psr-0": {
       "FilerDB": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FilerDB\\Tests\\": "tests/"
     }
   },
   "support": {
