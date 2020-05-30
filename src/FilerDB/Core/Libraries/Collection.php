@@ -48,6 +48,12 @@ class Collection {
   private $response = [];
 
   /**
+   * Holds the path for the collection in the filesystem.
+   * @var string
+   */
+  private $collectionPath = null;
+
+  /**
    * Class constructor
    */
   public function __construct ($config = null, $database, $collection) {
@@ -65,8 +71,15 @@ class Collection {
     // Set the current database
     $this->database = $database;
 
-    // Retrieve the current database.
+    // Retrieve the current collection.
     $this->collection = $collection;
+
+    // Build the collection path
+    $this->collectionPath = FileSystem::collectionPath(
+      $this->config->DATABASE_PATH,
+      $this->database,
+      $this->collection
+    );
 
     // Holder for documents that should be returned
     $this->documents = $this->getDocuments();
@@ -366,7 +379,7 @@ class Collection {
     $json = json_encode($documents, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $inserted = FileSystem::writeFile($this->path(), $json);
+    $inserted = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not inserted, throw an error.
     if (!$inserted)
@@ -436,7 +449,7 @@ class Collection {
     $json = json_encode($originalDocuments, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $updated = FileSystem::writeFile($this->path(), $json);
+    $updated = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not deleted, throw an error.
     if (!$updated)
@@ -460,7 +473,7 @@ class Collection {
     $json = json_encode($documents, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $emptied = FileSystem::writeFile($this->path(), $json);
+    $emptied = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not deleted, throw an error.
     if (!$emptied)
@@ -506,7 +519,7 @@ class Collection {
     $json = json_encode($originalDocuments, JSON_PRETTY_PRINT);
 
     // Attempt to write file
-    $deleted = FileSystem::writeFile($this->path(), $json);
+    $deleted = FileSystem::writeFile($this->collectionPath, $json);
 
     // If not deleted, throw an error.
     if (!$deleted)
@@ -615,7 +628,7 @@ class Collection {
    * an error because the data is malformed.
    */
   private function getDocuments () {
-    $contents = file_get_contents ($this->path());
+    $contents = file_get_contents ($this->collectionPath);
 
     try {
       $contents = json_decode($contents);
@@ -624,18 +637,5 @@ class Collection {
     }
 
     return $contents;
-  }
-
-  /**
-   * Returns a path for the current collection.
-   */
-  private function path () {
-    $path = $this->config->DATABASE_PATH .
-            DIRECTORY_SEPARATOR .
-            $this->database .
-            DIRECTORY_SEPARATOR .
-            $this->collection . '.json';
-
-    return $path;
   }
 }

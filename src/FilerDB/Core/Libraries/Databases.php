@@ -75,7 +75,9 @@ class Databases {
   public function create($database) {
     $exists = $this->exists($database);
     if ($exists) throw new FilerDBException('Database already exists');
-    $created = FileSystem::createDirectory($this->path($database));
+    $created = FileSystem::createDirectory(
+      FileSystem::databasePath($this->config->DATABASE_PATH, $database)
+    );
     if (!$created) throw new FilerDBException('Database was unable to be created');
     $this->retrieveDatabases();
     return true;
@@ -89,7 +91,9 @@ class Databases {
   public function delete($database) {
     $exists = $this->exists($database);
     if (!$exists) throw new FilerDBException('Database does not exist');
-    $removed = FileSystem::removeDirectory($this->path($database));
+    $removed = FileSystem::removeDirectory(
+      FileSystem::databasePath($this->config->DATABASE_PATH, $database)
+    );
     if (!$removed) throw new FilerDBException('Database was unable to be deleted');
     $this->retrieveDatabases();
     return true;

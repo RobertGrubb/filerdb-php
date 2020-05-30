@@ -6,8 +6,29 @@ use FilerDB\Core\Exceptions\FilerDBException;
 
 class FileSystem {
 
-  public static function databasePath ($path) {
-    return $path . DIRECTORY_SEPARATOR;
+  public static function rootPath ($path) {
+    if (substr($path, -1) !== '/') $path = $path . DIRECTORY_SEPARATOR;
+    return $path;
+  }
+
+  public static function databasePath ($path, $database) {
+    return $path . $database . DIRECTORY_SEPARATOR;
+  }
+
+  /**
+   * Returns collection path for the file system.
+   * @param  string $root
+   * @param  string $database
+   * @param  string $collection
+   * @return string
+   */
+  public static function collectionPath ($root, $database, $collection) {
+    $path = $root .
+            $database .
+            DIRECTORY_SEPARATOR .
+            $collection . '.json';
+
+    return $path;
   }
 
   /**

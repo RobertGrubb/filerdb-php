@@ -8,22 +8,23 @@ try {
   $filerdb = new FilerDB\Instance([
 
     // Required
-    'path' => __DIR__ . '/database',
+    'path' => __DIR__ . '/database2',
 
     // Optional configurations
     'includeTimestamps' => false,
-    'createDatabaseIfNotExist' => true
+
+    'database' => 'woot',
+
+    // Configs
+    'createRootIfNotExist' => true,
+    'createDatabaseIfNotExist' => true,
+    'createCollectionIfNotExist' => true
   ]);
 
-  $data = $filerdb
-    ->database('test')
-    ->collection('users')
-    ->filter(['id' => '5ed1b2957c6d92'])
-    ->update([
-      'username' => 'test234'
-    ]);
+  $filerdb->collection('foo')->insert([
+    'testing' => true
+  ]);
 
-  var_dump($data);
 } catch (Exception $e) {
   echo $e->getMessage() . PHP_EOL;
 }
