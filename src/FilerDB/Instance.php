@@ -71,9 +71,9 @@ class Instance
     $this->_setInitialConfig([
 
       /**
-       * This is the main path for FilerDB.
+       * This is the root path for FilerDB.
        */
-      'path' => false,
+      'root' => false,
 
       /**
        * If the root path does not exist, try

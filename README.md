@@ -16,7 +16,7 @@ Install via composer:
 use FilerDB\Instance;
 
 // Instantiate Database
-$filerdb = new Instance([ 'path' => __DIR__ . '/database/' ]);
+$filerdb = new Instance([ 'root' => __DIR__ . '/database/' ]);
 ```
 
 ### Configuration
@@ -25,15 +25,27 @@ $filerdb = new Instance([ 'path' => __DIR__ . '/database/' ]);
 [
 
   /**
-   * This is the main path for FilerDB.
+   * This is the root path for FilerDB.
    */
-  'path' => __DIR__ . '/database',
+  'root' => false,
 
   /**
-   * If the database path does not exist, try
+   * If the root path does not exist, try
+   * and create it.
+   */
+  'createRootIfNotExist' => false,
+
+  /**
+   * If the database does not exist, try
    * and create it.
    */
   'createDatabaseIfNotExist' => false,
+
+  /**
+   * If the collection does not exist, attempt
+   * to create it.
+   */
+  'createCollectionIfNotExist' => false,
 
   /**
    * If the insert and update logic handles
