@@ -9,8 +9,8 @@ use FilerDB\Core\Utilities\FileSystem;
 use FilerDB\Core\Utilities\Timestamp;
 use FilerDB\Core\Utilities\Dot;
 
-// Libraries
-use FilerDB\Core\Libraries\Document;
+// Helpers
+use FilerDB\Core\Helpers\Document;
 
 class Collection {
 
@@ -71,6 +71,7 @@ class Collection {
     // Holder for documents that should be returned
     $this->documents = $this->getDocuments();
 
+    // Holder for response that is returned
     $this->response  = $this->documents;
   }
 
@@ -85,7 +86,7 @@ class Collection {
    */
   public function id ($id) {
     $documents = $this->documents;
-    $data = $this->documentById($id, $documents);
+    $data = Document::byId($documents, $id);
     if ($data === false) return false;
     $this->documents = $documents[$data->index];
     $this->response  = $this->documents;
@@ -344,7 +345,7 @@ class Collection {
     $id = (isset($insertData->id) ? $insertData->id : uniqid());
 
     // If the id already set?
-    if ($this->documentById($id, $documents) !== false)
+    if (Document::exists($documents, $id))
       throw new FilerDBException("Document with id:$id already exists");
 
     $insertData->id = $id;
@@ -388,7 +389,7 @@ class Collection {
       // we can assume it's a single document that is being
       // updated.
       if (!is_array($documentsToUpdate)) {
-        $docInfo = $this->documentById($this->documents->id, $originalDocuments);
+        $docInfo = Document::byId($originalDocuments, $this->documents->id);
         $key = $docInfo->index;
 
         // Update all of the keys
@@ -606,35 +607,6 @@ class Collection {
     }
 
     return $data;
-  }
-
-  /**
-   * Find a document by it's id in an array
-   * of documents.
-   *
-   * Returns the index and the document data in
-   * object format.
-   */
-  private function documentById ($id, $documents) {
-    $index = false;
-    $doc = false;
-
-    foreach ($documents as $i => $document) {
-
-      if ($document->id === $id) {
-        $index = $i;
-        $doc = $document;
-      } else {
-        continue;
-      }
-    }
-
-    if (!$index) return false;
-
-    return (object) [
-      'index' => $index,
-      'document' => $doc
-    ];
   }
 
   /**
