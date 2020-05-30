@@ -242,7 +242,9 @@ class Instance
    * to go to.
    */
   public function selectDatabase ($database = null) {
-    $database = $database || $this->config->database;
+    $database = !is_null($database) ? $database : $this->config->database;
+
+    if (!$database) throw new FilerDBException('No database provided');
 
     if (!$this->databases->exists($database)) {
 
@@ -250,8 +252,6 @@ class Instance
        * If set to create when non-existent
        */
       if ($this->config->createDatabaseIfNotExist === true) {
-
-        var_dump($databasePath);
 
         // Get the database path
         $databasePath = FileSystem::databasePath(
