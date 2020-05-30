@@ -584,9 +584,14 @@ class Collection {
    * ==============================
    */
 
+  /**
+   * Takes in an object, or an array of objects,
+   * and returns ONLY the fields specified in $fields
+   * @param  array|object $data
+   * @param  array
+   * @return array|object
+   */
   private function pickFieldsFromData ($data, $fields) {
-
-    print_r($data);
 
     if (is_array($data)) {
       foreach ($data as $documentKey => $document) {
