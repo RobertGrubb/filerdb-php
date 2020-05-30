@@ -6,6 +6,7 @@ use FilerDB\Core\Exceptions\FilerDBException;
 
 use FilerDB\Core\Utilities\Timestamp;
 use FilerDB\Core\Utilities\FileSystem;
+use FilerDB\Core\Utilities\Backup;
 
 use FilerDB\Core\Libraries\Database;
 use FilerDB\Core\Libraries\Databases;
@@ -52,6 +53,12 @@ class Instance
    * @var FilerDB\Core\Libraries\Timestamp
    */
   public $timestamp = null;
+
+  /**
+   * Backup instance holder
+   * @var FilerDB\Core\Libraries\Backuop
+   */
+  public $backup = null;
 
   /**
    * Class constructor
@@ -136,7 +143,8 @@ class Instance
     if (!$this->config->DATABASE_PATH)
       throw new FilerDBException("No database path provided.");
 
-    $this->databases  = new Databases($this->config);
+    $this->databases = new Databases($this->config);
+    $this->backup    = new Backup($this->config);
     $this->timestamp = new Timestamp($this->config);
 
     // Check if the default database was provided in the config.

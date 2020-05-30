@@ -2,12 +2,6 @@
 
 A simplistic PHP flat file database designed to get your application up and running fast. Please note this package is currently in development and is not yet at a release.
 
-# Todo
-
-- [ ] Make filtering a little easier when there are conditionals.
-- [ ] Ability to offset.
-- [ ] Database backups?
-
 # Usage
 
 Please make sure your database directory has correct permissions for READ and WRITE.
@@ -236,3 +230,13 @@ $filerdb
   ->limit(10, 9)
   ->get();
 ```
+
+# Backups
+
+You can now programmatically backup your database. You can do so by using the following code:
+
+```
+$filerdb->backup->create('file_name_here.zip');
+```
+
+This was provided so you can manually backup your database via your own command line script, or automatically via a cron job, or something similar.

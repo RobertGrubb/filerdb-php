@@ -15,7 +15,8 @@
     }
   ],
   "require": {
-    "php": ">=5.4.0"
+    "php": ">=5.4.0",
+    "nelexa/zip": "^3.3"
   },
   "require-dev": {
     "phpunit/phpunit": "5.5.*"
