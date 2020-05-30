@@ -201,6 +201,16 @@ $filerdb
   ->get();
 ```
 
+### Specify fields that come back in response
+
+```
+// Only returns the username field
+$filerdb
+  ->database('dev')
+  ->collection('users')
+  ->get(['username']);
+```
+
 ### Ordering documents by a field
 
 ```

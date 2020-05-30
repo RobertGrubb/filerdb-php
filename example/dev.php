@@ -29,8 +29,8 @@ try {
   $data = $filerdb
     ->database('test')
     ->collection('users')
-    ->limit(1, 1)
-    ->get();
+    ->id('5ed1b2957c6d92')
+    ->get(['username']);
 
   print_r($data);
 } catch (Exception $e) {
