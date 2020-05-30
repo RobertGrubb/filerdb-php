@@ -8,11 +8,12 @@ try {
   $filerdb = new FilerDB\Instance([
 
     // Required
-    'path' => __DIR__ . '/database2',
+    'root' => __DIR__ . '/database2',
 
     // Optional configurations
     'includeTimestamps' => false,
 
+    // Specify database
     'database' => 'woot',
 
     // Configs

@@ -37,7 +37,7 @@ class Backup {
     try {
 
       $zipFile
-        ->addDirRecursive($this->config->DATABASE_PATH)
+        ->addDirRecursive($this->config->root)
         ->saveAsFile($output)
         ->close();
 

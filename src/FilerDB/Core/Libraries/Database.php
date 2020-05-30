@@ -44,7 +44,7 @@ class Database {
     $this->database = $database;
 
     // Build the database path
-    $this->databasePath = FileSystem::databasePath($this->config->DATABASE_PATH, $this->database);
+    $this->databasePath = FileSystem::databasePath($this->config->root, $this->database);
   }
 
   /**
@@ -66,7 +66,7 @@ class Database {
 
         // Build the collection path
         $collectionPath = FileSystem::collectionPath(
-          $this->config->DATABASE_PATH,
+          $this->config->root,
           $this->database,
           $collection
         );

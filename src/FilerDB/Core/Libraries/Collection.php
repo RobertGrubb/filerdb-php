@@ -76,7 +76,7 @@ class Collection {
 
     // Build the collection path
     $this->collectionPath = FileSystem::collectionPath(
-      $this->config->DATABASE_PATH,
+      $this->config->root,
       $this->database,
       $this->collection
     );
