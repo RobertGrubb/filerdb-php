@@ -25,11 +25,14 @@ class Backup {
     $this->config = $config;
   }
 
+  /**
+   * Makes use of PhpZip to create a zipped backup file
+   * of the database path.
+   * @param  string $output
+   * @return boolean|exception
+   */
   public function create ($output = './backup.zip') {
     $zipFile = new ZipFile();
-
-    var_dump($this->config->DATABASE_PATH);
-    var_dump($output);
 
     try {
 
