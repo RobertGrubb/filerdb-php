@@ -121,13 +121,4 @@ class Databases {
     $this->databases = $result;
   }
 
-  /**
-   * Builds the path for the database in the file system.
-   * @return string $path
-   */
-  private function path ($database) {
-    $path = $this->config->root . DIRECTORY_SEPARATOR . $database . DIRECTORY_SEPARATOR;
-    return $path;
-  }
-
 }
