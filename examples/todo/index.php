@@ -3,6 +3,8 @@
 // Include a file that returns the filerdb instance.
 $filerdb = require __DIR__ . '/filerdb.php';
 
+if (!$filerdb) die('FilerDB was unable to instantiate.');
+
 // Current action
 $action = (isset($_GET['a']) ? $_GET['a'] : false);
 
