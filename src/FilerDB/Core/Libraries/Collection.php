@@ -495,18 +495,28 @@ class Collection {
      *
      * Warn them to use ->empty() instead.
      */
-    if (count($documentsToDelete) === count($originalDocuments)) {
-      throw new FilerDBException("Please use ->empty() to delete all records");
-      return false;
+    if (is_array($documentsToDelete) && is_array($originalDocuments)) {
+      if (count($documentsToDelete) === count($originalDocuments)) {
+        throw new FilerDBException("Please use ->empty() to delete all records");
+        return false;
+      }
     }
 
     /**
      * Filter out records that match the documents
      * to be deleted.
      */
-    foreach ($documentsToDelete as $deleteDoc) {
+    if (is_array($documentsToDelete)) {
+      foreach ($documentsToDelete as $deleteDoc) {
+        foreach ($originalDocuments as $key => $origDoc) {
+          if ($origDoc->id === $deleteDoc->id) {
+            unset($originalDocuments[$key]);
+          }
+        }
+      }
+    } else {
       foreach ($originalDocuments as $key => $origDoc) {
-        if ($origDoc->id === $deleteDoc->id) {
+        if ($origDoc->id === $documentsToDelete->id) {
           unset($originalDocuments[$key]);
         }
       }

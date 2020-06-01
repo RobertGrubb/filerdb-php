@@ -47,7 +47,7 @@ class Document {
     }
 
     // If no index was set, return false.
-    if (!$index) return false;
+    if ($index === false) return false;
 
     // Return object with data.
     return (object) [
