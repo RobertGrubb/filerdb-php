@@ -14,12 +14,19 @@ if ($action === 'submit') {
       'title' => $todo
     ]);
   }
+
+  header('Location: index.php');
+  exit;
+
 } elseif ($action === 'remove') {
   $id = (isset($_GET['id']) ? $_GET['id'] : false);
 
   if ($id !== false) {
     $filerdb->collection('items')->id($id)->delete();
   }
+
+  header('Location: index.php');
+  exit;
 }
 
 // Retrieve all todo items
