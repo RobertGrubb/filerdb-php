@@ -100,7 +100,13 @@ class Collection {
   public function id ($id) {
     $documents = $this->documents;
     $data = Document::byId($documents, $id);
-    if ($data === false) return false;
+
+    if ($data === false) {
+      $this->documents = false;
+      $this->response = false;
+      return $this;
+    }
+
     $this->documents = $documents[$data->index];
     $this->response  = $this->documents;
     return $this;
@@ -113,13 +119,17 @@ class Collection {
    */
   public function get ($fields = false) {
 
-    /**
-     * If the columns parameter is provided,
-     * and is an array.
-     */
-    if (is_array($fields)) {
-      if (count($fields) >= 1) {
-        return $this->pickFieldsFromData($this->response, $fields);
+    // Make sure there is a document(s) to iterate through.
+    if ($this->response !== false) {
+
+      /**
+       * If the columns parameter is provided,
+       * and is an array.
+       */
+      if (is_array($fields)) {
+        if (count($fields) >= 1) {
+          return $this->pickFieldsFromData($this->response, $fields);
+        }
       }
     }
 
@@ -488,19 +498,6 @@ class Collection {
   public function delete () {
     $documentsToDelete = $this->documents;
     $originalDocuments = $this->getDocuments();
-
-    /**
-     * Fail safe, we do not want to delete all records
-     * with this method.
-     *
-     * Warn them to use ->empty() instead.
-     */
-    if (is_array($documentsToDelete) && is_array($originalDocuments)) {
-      if (count($documentsToDelete) === count($originalDocuments)) {
-        throw new FilerDBException("Please use ->empty() to delete all records");
-        return false;
-      }
-    }
 
     /**
      * Filter out records that match the documents
