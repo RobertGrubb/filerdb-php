@@ -1,13 +1,13 @@
 <?php
 
-require_once __DIR__ , '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../src/FilerDB.php';
 
 use FilerDB\Instance;
 
 // Instantiate Database
 $filerdb = new Instance([
-  'path' => __DIR__ . '/database/'
+    'path' => __DIR__ . '/database/',
 ]);
 
 // Create a new database
@@ -24,8 +24,8 @@ print_r($filerdb->database('dev')->collections());
 
 // Insert a new document
 $filerdb->database('dev')->collection('users')->insert([
-  'username' => 'test',
-  'email'    => 'test@test.com'
+    'username' => 'test',
+    'email' => 'test@test.com',
 ]);
 
 // Get all documents from collection
