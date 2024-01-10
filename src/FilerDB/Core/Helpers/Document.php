@@ -4,7 +4,8 @@ namespace FilerDB\Core\Helpers;
 
 use FilerDB\Core\Exceptions\FilerDBException;
 
-class Document {
+class Document
+{
 
   /**
    * Check documents to see if the id exists.
@@ -12,7 +13,8 @@ class Document {
    * @param  string
    * @return boolean
    */
-  public static function exists ($documents, $id) {
+  public static function exists($documents, $id)
+  {
     if (self::byId($documents, $id) === false) return false;
     return true;
   }
@@ -26,7 +28,8 @@ class Document {
    * @param  string $id
    * @return mixed
    */
-  public static function byId ($documents, $id = null) {
+  public static function byId($documents, $id = null)
+  {
     if (is_null($id)) return false;
 
     // Set the index to false by default

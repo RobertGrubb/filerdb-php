@@ -18,7 +18,7 @@ class Instance
   /**
    * Default configuration
    */
-  private $config = [];
+  private $config;
 
   /**
    * Database Statuses
@@ -63,7 +63,8 @@ class Instance
   /**
    * Class constructor
    */
-  public function __construct ($config = null) {
+  public function __construct($config = null)
+  {
 
     /**
      * Set the initial configuration variables.
@@ -120,7 +121,8 @@ class Instance
    *
    * Checks for things like path existence, etc.
    */
-  private function _runCoreChecks () {
+  private function _runCoreChecks()
+  {
 
     // Builds the path for the database.
     $rootPath = FileSystem::rootPath($this->config->root);
@@ -151,7 +153,8 @@ class Instance
   /**
    * Initializes the database
    */
-  private function _initialize () {
+  private function _initialize()
+  {
     if (!$this->config->root)
       throw new FilerDBException("No database path provided.");
 
@@ -166,7 +169,8 @@ class Instance
   /**
    * Start the chain with database.
    */
-  public function database ($database) {
+  public function database($database)
+  {
     if (!$this->databases->exists($database)) {
 
       /**
@@ -186,7 +190,6 @@ class Instance
         // If not created, then a permissions error probably happened.
         if (!$created)
           throw new FilerDBException('Database not found, also unable to create database path.');
-
       } else {
         throw new FilerDBException('Database does not exist.');
       }
@@ -203,7 +206,8 @@ class Instance
    * NOTE: You can still access the ->database logic if you need
    * to pull from a different database within the same code.
    */
-  public function collection ($collection) {
+  public function collection($collection)
+  {
 
     // If default database is not set, error.
     if (!$this->defaultDatabase)
@@ -227,7 +231,6 @@ class Instance
         // If not created, then a permissions error probably happened.
         if (!$created)
           throw new FilerDBException('Path not found, also unable to create database path.');
-
       } else {
         throw new FilerDBException("$collection does not exist");
       }
@@ -241,7 +244,8 @@ class Instance
    * Selects a default database for all collection calls
    * to go to.
    */
-  public function selectDatabase ($database = null) {
+  public function selectDatabase($database = null)
+  {
     $database = !is_null($database) ? $database : $this->config->database;
 
     if (!$database) throw new FilerDBException('No database provided');
@@ -265,7 +269,6 @@ class Instance
         // If not created, then a permissions error probably happened.
         if (!$created)
           throw new FilerDBException('Database not found, also unable to create database path.');
-
       } else {
         throw new FilerDBException('Database does not exist.');
       }
@@ -278,7 +281,8 @@ class Instance
    * Ran from instantiation. Will select a default database
    * if one is provided in the configuration
    */
-  private function _checkDefaultDatabase () {
+  private function _checkDefaultDatabase()
+  {
     if (isset($this->config->database)) {
       if (!is_null($this->config->database) && !empty($this->config->database)) {
         $this->selectDatabase($this->config->database);
@@ -290,7 +294,8 @@ class Instance
    * Get a configuration variable from the
    * class configuration.
    */
-  private function _get ($var) {
+  private function _get($var)
+  {
     if (isset($this->config->{$var})) return $var;
     return false;
   }
@@ -298,7 +303,8 @@ class Instance
   /**
    * Sets the default class configuration
    */
-  private function _setInitialConfig ($initialConfig, $config) {
+  private function _setInitialConfig($initialConfig, $config)
+  {
     $this->config = (object) $initialConfig;
 
     if (!is_null($config)) {
@@ -322,8 +328,8 @@ class Instance
   /**
    * Set the class configuration variable.
    */
-  public function set ($var, $val) {
+  public function set($var, $val)
+  {
     $this->config->{$var} = $val;
   }
-
 }

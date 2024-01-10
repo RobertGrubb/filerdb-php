@@ -6,7 +6,8 @@ use FilerDB\Core\Utilities\FileSystem;
 
 use FilerDB\Core\Exceptions\FilerDBException;
 
-class Databases {
+class Databases
+{
 
   /**
    * Database configuration
@@ -23,7 +24,8 @@ class Databases {
   /**
    * Class constructor
    */
-  public function __construct ($config = null) {
+  public function __construct($config = null)
+  {
 
     // If config is null, throw an error.
     if (is_null($config))
@@ -47,7 +49,8 @@ class Databases {
    * @param  string $database
    * @return boolean
    */
-  public function exists($database) {
+  public function exists($database)
+  {
     if (in_array($database, $this->databases)) return true;
     return false;
   }
@@ -56,7 +59,8 @@ class Databases {
    * List of databases
    * @return array databases
    */
-  public function list() {
+  public function list()
+  {
     return $this->databases;
   }
 
@@ -72,7 +76,8 @@ class Databases {
    * the root
    * @param string $database
    */
-  public function create($database) {
+  public function create($database)
+  {
     $exists = $this->exists($database);
     if ($exists) throw new FilerDBException('Database already exists');
     $created = FileSystem::createDirectory(
@@ -88,7 +93,8 @@ class Databases {
    * the root
    * @param string $database
    */
-  public function delete($database) {
+  public function delete($database)
+  {
     $exists = $this->exists($database);
     if (!$exists) throw new FilerDBException('Database does not exist');
     $removed = FileSystem::removeDirectory(
@@ -109,9 +115,10 @@ class Databases {
    * Returns current databases
    * @return array
    */
-  private function retrieveDatabases() {
+  private function retrieveDatabases()
+  {
     $result = [];
-    $databases = glob($this->config->root . '*' , GLOB_ONLYDIR);
+    $databases = glob($this->config->root . '*', GLOB_ONLYDIR);
 
     foreach ($databases as $database) {
       $pathParts = explode('/', $database);
@@ -120,5 +127,4 @@ class Databases {
 
     $this->databases = $result;
   }
-
 }

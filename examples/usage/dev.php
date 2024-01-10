@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ , '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../src/FilerDB.php';
 
 try {
@@ -25,7 +25,6 @@ try {
   $filerdb->collection('foo')->insert([
     'testing' => true
   ]);
-
 } catch (Exception $e) {
   echo $e->getMessage() . PHP_EOL;
 }

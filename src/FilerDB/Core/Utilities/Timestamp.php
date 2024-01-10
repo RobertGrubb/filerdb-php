@@ -4,7 +4,8 @@ namespace FilerDB\Core\Utilities;
 
 use FilerDB\Core\Exceptions\FilerDBException;
 
-class Timestamp {
+class Timestamp
+{
 
   /**
    * Database configuration
@@ -15,7 +16,8 @@ class Timestamp {
   /**
    * Class constructor
    */
-  public function __construct ($config = null) {
+  public function __construct($config = null)
+  {
 
     // If config is null, throw an error.
     if (is_null($config))
@@ -32,7 +34,8 @@ class Timestamp {
   /**
    * Returns a timestamp for now
    */
-  public function now () {
+  public function now()
+  {
     return time();
   }
 
@@ -40,7 +43,8 @@ class Timestamp {
    * Returns a timestamp for however many days
    * specified (A negative number can be provided)
    */
-  public function days ($days = 0) {
+  public function days($days = 0)
+  {
     return strtotime("$days days");
   }
 }

@@ -4,14 +4,17 @@ namespace FilerDB\Core\Utilities;
 
 use FilerDB\Core\Exceptions\FilerDBException;
 
-class FileSystem {
+class FileSystem
+{
 
-  public static function rootPath ($path) {
+  public static function rootPath($path)
+  {
     if (substr($path, -1) !== '/') $path = $path . DIRECTORY_SEPARATOR;
     return $path;
   }
 
-  public static function databasePath ($path, $database) {
+  public static function databasePath($path, $database)
+  {
     return $path . $database . DIRECTORY_SEPARATOR;
   }
 
@@ -22,11 +25,12 @@ class FileSystem {
    * @param  string $collection
    * @return string
    */
-  public static function collectionPath ($root, $database, $collection) {
+  public static function collectionPath($root, $database, $collection)
+  {
     $path = $root .
-            $database .
-            DIRECTORY_SEPARATOR .
-            $collection . '.json';
+      $database .
+      DIRECTORY_SEPARATOR .
+      $collection . '.json';
 
     return $path;
   }
@@ -43,7 +47,8 @@ class FileSystem {
    * @param  mixed $data
    * @return boolean
    */
-  public static function writeFile ($file, $data) {
+  public static function writeFile($file, $data)
+  {
     try {
       file_put_contents($file, $data);
     } catch (Exception $e) {
@@ -58,7 +63,8 @@ class FileSystem {
    * Deletes a file in the filesystem, throws an error
    * if an exception is encountered.
    */
-  public static function deleteFile ($file) {
+  public static function deleteFile($file)
+  {
     try {
       unlink($file);
     } catch (Exception $e) {
@@ -81,7 +87,8 @@ class FileSystem {
    * @param  string $dir
    * @return boolean
    */
-  public static function pathExists ($dir) {
+  public static function pathExists($dir)
+  {
     if (!file_exists($dir)) {
       return false;
     }
@@ -94,7 +101,8 @@ class FileSystem {
    * @param  string $src
    * @return boolean
    */
-  public static function isWritable ($src) {
+  public static function isWritable($src)
+  {
     if (is_writable($src)) {
       return false;
     }
@@ -107,7 +115,8 @@ class FileSystem {
    * @param  string $dir
    * @return boolean
    */
-  public static function createDirectory ($dir) {
+  public static function createDirectory($dir)
+  {
     if (!mkdir($dir, 0777)) {
       return false;
     }
@@ -120,13 +129,14 @@ class FileSystem {
    * @param  string $src
    * @return boolean
    */
-  public static function removeDirectory ($src) {
+  public static function removeDirectory($src)
+  {
     $dir = opendir($src);
 
-    while(false !== ( $file = readdir($dir)) ) {
+    while (false !== ($file = readdir($dir))) {
       if (($file != '.') && ($file != '..')) {
         $full = $src . '/' . $file;
-        if (is_dir($full)) rrmdir($full);
+        if (is_dir($full)) rmdir($full);
         else unlink($full);
       }
     }

@@ -4,7 +4,8 @@ namespace FilerDB\Core\Utilities;
 
 use \PhpZip\ZipFile;
 
-class Backup {
+class Backup
+{
 
   /**
    * Database configuration
@@ -15,7 +16,8 @@ class Backup {
   /**
    * Class constructor
    */
-  public function __construct ($config = null) {
+  public function __construct($config = null)
+  {
 
     // If config is null, throw an error.
     if (is_null($config))
@@ -31,7 +33,8 @@ class Backup {
    * @param  string $output
    * @return boolean|exception
    */
-  public function create ($output = './backup.zip') {
+  public function create($output = './backup.zip')
+  {
     $zipFile = new ZipFile();
 
     try {
@@ -40,8 +43,7 @@ class Backup {
         ->addDirRecursive($this->config->root)
         ->saveAsFile($output)
         ->close();
-
-    } catch(\PhpZip\Exception\ZipException $e) {
+    } catch (\PhpZip\Exception\ZipException $e) {
       throw new FilerDBException($e->getMessage());
     } finally {
       $zipFile->close();
@@ -49,5 +51,4 @@ class Backup {
 
     return true;
   }
-
 }

@@ -12,7 +12,8 @@ use FilerDB\Core\Utilities\Dot;
 // Helpers
 use FilerDB\Core\Helpers\Document;
 
-class Collection {
+class Collection
+{
 
   /**
    * Database configuration
@@ -56,7 +57,8 @@ class Collection {
   /**
    * Class constructor
    */
-  public function __construct ($config = null, $database, $collection) {
+  public function __construct($config, $database, $collection)
+  {
 
     // If config is null, throw an error.
     if (is_null($config))
@@ -97,7 +99,8 @@ class Collection {
   /**
    * Grabs a document with a specific id
    */
-  public function id ($id) {
+  public function id($id)
+  {
     $documents = $this->documents;
     $data = Document::byId($documents, $id);
 
@@ -117,7 +120,8 @@ class Collection {
    * orders, and anything else that chains
    * before it.
    */
-  public function get ($fields = false) {
+  public function get($fields = false)
+  {
 
     // Make sure there is a document(s) to iterate through.
     if ($this->response !== false) {
@@ -139,14 +143,16 @@ class Collection {
   /**
    * Returns number of documents
    */
-  public function count () {
+  public function count()
+  {
     return count($this->response);
   }
 
   /**
    * Returns all documents in the collection.
    */
-  public function all () {
+  public function all()
+  {
     $documents = $this->documents;
     return $documents;
   }
@@ -160,7 +166,8 @@ class Collection {
   /**
    * Filter results from the documents.
    */
-  public function filter ($filters = []) {
+  public function filter($filters = [])
+  {
     $documents = $this->documents;
     $filteredDocuments = [];
 
@@ -192,7 +199,6 @@ class Collection {
               $passes = false;
               continue;
             }
-
           } else {
 
             // If the field is not set.
@@ -268,9 +274,9 @@ class Collection {
                 continue;
               }
 
-            /**
-             * Greater than or equal to
-             */
+              /**
+               * Greater than or equal to
+               */
             } else if ($conditional === '>=') {
 
               if ($documentValue >= $value) {
@@ -280,9 +286,9 @@ class Collection {
                 continue;
               }
 
-            /**
-             * Greater than
-             */
+              /**
+               * Greater than
+               */
             } elseif ($conditional === '>') {
 
               if ($documentValue > $value) {
@@ -292,9 +298,9 @@ class Collection {
                 continue;
               }
 
-            /**
-             * Less than or equal to
-             */
+              /**
+               * Less than or equal to
+               */
             } elseif ($conditional === '<=') {
 
               if ($documentValue <= $value) {
@@ -304,9 +310,9 @@ class Collection {
                 continue;
               }
 
-            /**
-             * Less than
-             */
+              /**
+               * Less than
+               */
             } elseif ($conditional === '<') {
 
               if ($documentValue < $value) {
@@ -319,7 +325,6 @@ class Collection {
               $passes = false;
             }
           } else {
-
           }
         }
       }
@@ -347,7 +352,8 @@ class Collection {
   /**
    * Insert data to the collection
    */
-  public function insert ($data) {
+  public function insert($data)
+  {
 
     // Check if the data is a correct format
     if (!is_array($data) && !is_object($data))
@@ -401,7 +407,8 @@ class Collection {
   /**
    * Update data to the collection
    */
-  public function update ($data) {
+  public function update($data)
+  {
     $documentsToUpdate = $this->documents;
     $originalDocuments = $this->getDocuments();
 
@@ -423,9 +430,9 @@ class Collection {
         if ($this->config->includeTimestamps)
           $originalDocuments[$key]->updatedAt = $this->timestamp->now();
 
-      // If it is an array, then it means we have multiple documents
-      // that are in need of updating. Iterate through each and
-      // update accordingly.
+        // If it is an array, then it means we have multiple documents
+        // that are in need of updating. Iterate through each and
+        // update accordingly.
       } else {
 
         /**
@@ -476,7 +483,8 @@ class Collection {
   /**
    * Will delete all documents.
    */
-  public function empty () {
+  public function empty()
+  {
     $documents = [];
 
     // Convert to json
@@ -495,7 +503,8 @@ class Collection {
   /**
    * Will delete all documents that have been filtered.
    */
-  public function delete () {
+  public function delete()
+  {
     $documentsToDelete = $this->documents;
     $originalDocuments = $this->getDocuments();
 
@@ -545,7 +554,8 @@ class Collection {
    * Orders by a field (asc, or desc).
    * @TODO: Add ability to order by deep nested array/object
    */
-  public function orderBy($field, $direction = 'asc') {
+  public function orderBy($field, $direction = 'asc')
+  {
     $documents = $this->documents;
 
     if ($direction === 'asc') {
@@ -571,7 +581,8 @@ class Collection {
   /**
    * Limit the number of results that are returned
    */
-  public function limit($limit, $offset = 0) {
+  public function limit($limit, $offset = 0)
+  {
     $documents = $this->documents;
     $limitedDocuments = [];
 
@@ -612,7 +623,8 @@ class Collection {
    * @param  array
    * @return array|object
    */
-  private function pickFieldsFromData ($data, $fields) {
+  private function pickFieldsFromData($data, $fields)
+  {
 
     if (is_array($data)) {
       foreach ($data as $documentKey => $document) {
@@ -634,8 +646,9 @@ class Collection {
    * If the file can not be decoded, throw
    * an error because the data is malformed.
    */
-  private function getDocuments () {
-    $contents = file_get_contents ($this->collectionPath);
+  private function getDocuments()
+  {
+    $contents = file_get_contents($this->collectionPath);
 
     try {
       $contents = json_decode($contents);

@@ -8,7 +8,8 @@ use FilerDB\Core\Utilities\FileSystem;
 
 use FilerDB\Core\Libraries\Collection;
 
-class Database {
+class Database
+{
 
   /**
    * Database configuration
@@ -31,7 +32,8 @@ class Database {
   /**
    * Class constructor
    */
-  public function __construct ($config = null, $database) {
+  public function __construct($config, $database)
+  {
 
     // If config is null, throw an error.
     if (is_null($config))
@@ -55,7 +57,8 @@ class Database {
    * @TODO: Create config variable that decides whether or not
    * it auto creates the collection if it doesn't exist.
    */
-  public function collection($collection) {
+  public function collection($collection)
+  {
 
     // If the collection does not exist
     if (!$this->collectionExists($collection)) {
@@ -77,7 +80,6 @@ class Database {
         // If not created, then a permissions error probably happened.
         if (!$created)
           throw new FilerDBException('Path not found, also unable to create database path.');
-
       } else {
         throw new FilerDBException("$collection does not exist");
       }
@@ -96,7 +98,8 @@ class Database {
    * Creates a new collection for a database
    * @param string $database
    */
-  public function createCollection($collection) {
+  public function createCollection($collection)
+  {
     $collectionPath = $this->databasePath . $collection . '.json';
     $exists = $this->collectionExists($collection);
     if ($exists) throw new FilerDBException('Collection already exists');
@@ -109,7 +112,8 @@ class Database {
    * Delets a collection for a database
    * @param string $collection
    */
-  public function deleteCollection($collection) {
+  public function deleteCollection($collection)
+  {
     $collectionPath = $this->databasePath . $collection . '.json';
     $exists = $this->collectionExists($collection);
     if (!$exists) throw new FilerDBException('Collection does not exist');
@@ -128,7 +132,8 @@ class Database {
    * List of collections
    * @return array collections
    */
-  public function collections() {
+  public function collections()
+  {
     return $this->retrieveCollections();
   }
 
@@ -136,7 +141,8 @@ class Database {
    * Checks if a collection exists
    * @return boolean
    */
-  public function collectionExists ($collection) {
+  public function collectionExists($collection)
+  {
     $collections = $this->retrieveCollections();
     if (in_array($collection, $collections)) return true;
     return false;
@@ -152,9 +158,10 @@ class Database {
    * Returns collections for current database.
    * @return array
    */
-  private function retrieveCollections() {
+  private function retrieveCollections()
+  {
     $result = [];
-    $collections = glob($this->databasePath . '*.json' , GLOB_BRACE);
+    $collections = glob($this->databasePath . '*.json', GLOB_BRACE);
 
     foreach ($collections as $collection) {
       $result[] = basename($collection, '.json');
@@ -162,5 +169,4 @@ class Database {
 
     return $result;
   }
-
 }
